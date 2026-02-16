@@ -20,7 +20,7 @@ export default function AccountPage() {
     const supabase = createClient();
 
     const [activeSection, setActiveSection] = useState<Section>('profile');
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -28,7 +28,7 @@ export default function AccountPage() {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [tagline, setTagline] = useState('');
-    const [currentPassword, setCurrentPassword] = useState('');
+
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -53,7 +53,7 @@ export default function AccountPage() {
     const [newCategory, setNewCategory] = useState('');
 
     // Appearance state
-    const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('dark');
+
     const [accentColor, setAccentColor] = useState('#e05c4a');
     const [compactMode, setCompactMode] = useState(false);
 
@@ -63,6 +63,7 @@ export default function AccountPage() {
         loadUserData();
         loadPreferences();
         loadStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loadUserData = async () => {
@@ -97,8 +98,7 @@ export default function AccountPage() {
             setQuietUntil(parsed.until || '08:00');
         }
 
-        const themePreference = localStorage.getItem('theme_preference') as 'dark' | 'light' | 'system';
-        if (themePreference) setTheme(themePreference);
+
 
         const accent = localStorage.getItem('accent_color');
         if (accent) setAccentColor(accent);
@@ -150,7 +150,7 @@ export default function AccountPage() {
                 data: { full_name: fullName, tagline }
             });
             showToast('Profile updated ✓', 'success');
-        } catch (error) {
+        } catch {
             showToast('Failed to update profile', 'error');
         }
         setSaving(false);
@@ -166,10 +166,10 @@ export default function AccountPage() {
         try {
             await supabase.auth.updateUser({ password: newPassword });
             showToast('Password updated ✓', 'success');
-            setCurrentPassword('');
+
             setNewPassword('');
             setConfirmPassword('');
-        } catch (error) {
+        } catch {
             showToast('Failed to update password', 'error');
         }
         setSaving(false);
@@ -190,6 +190,8 @@ export default function AccountPage() {
     };
 
     const handleExportCSV = async () => {
+        if (!user) return;
+
         const { data: contracts } = await supabase
             .from('contracts')
             .select('*')
@@ -212,6 +214,7 @@ export default function AccountPage() {
     };
 
     const handleClearAll = async () => {
+        if (!user) return;
         if (!confirm('Are you sure? This cannot be undone.')) return;
 
         await supabase.from('contracts').delete().eq('user_id', user.id);
@@ -227,7 +230,7 @@ export default function AccountPage() {
         router.push('/');
     };
 
-    const showToast = (message: string, type: 'success' | 'error') => {
+    const showToast = (message: string, _type: 'success' | 'error') => {
         // Simple toast implementation
         alert(message);
     };
