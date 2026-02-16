@@ -1,100 +1,91 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { ArrowRight, ShieldCheck, Clock, Bell } from 'lucide-react';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="flex min-h-screen flex-col bg-[#f5f0e8] text-[#0f0e0c]">
+      <header className="px-6 py-6 sm:px-12">
+        <nav className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-[#0f0e0c]" />
+            <span className="font-serif text-xl font-bold tracking-tight text-[#0f0e0c]">Future-You</span>
+          </div>
+          <div className="flex gap-4">
+            <Link
+              href="/auth/login"
+              className="rounded-md px-4 py-2 text-sm font-medium text-[#6b6458] hover:text-[#0f0e0c]"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="rounded-md bg-[#0f0e0c] px-4 py-2 text-sm font-medium text-[#f5f0e8] shadow-sm hover:bg-[#2a2a2a]"
+            >
+              Sign up
+            </Link>
+          </div>
+        </nav>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+      <main className="flex-1">
+        <section className="px-6 py-24 sm:px-12 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="font-serif text-4xl font-bold tracking-tight text-[#0f0e0c] sm:text-6xl">
+              Build Trust With Your Future Self
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-[#6b6458]">
+              Stop breaking promises to yourself. Create binding contracts with specific conditions,
+              track your integrity, and become the person you say you want to be.
+            </p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <Link
+                href="/auth/signup"
+                className="flex items-center gap-2 rounded-md bg-[#c9443a] px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-[#b03028] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c9443a]"
+              >
+                Start Your First Contract
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#f0ebe0] px-6 py-24 sm:px-12 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid grid-cols-1 gap-12 sm:grid-cols-3">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#e6e1d6] text-[#0f0e0c]">
+                  <Clock className="h-6 w-6" />
+                </div>
+                <h3 className="font-serif text-xl font-bold">Smart Conditions</h3>
+                <p className="mt-2 text-[#6b6458]">
+                  Set specific triggers for your promises based on time, day, location, or situation.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#e6e1d6] text-[#0f0e0c]">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <h3 className="font-serif text-xl font-bold">Track Integrity</h3>
+                <p className="mt-2 text-[#6b6458]">
+                  Visualize your &quot;Kept vs. Broken&quot; ratio. See your character development over time.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#e6e1d6] text-[#0f0e0c]">
+                  <Bell className="h-6 w-6" />
+                </div>
+                <h3 className="font-serif text-xl font-bold">Intelligent Reminders</h3>
+                <p className="mt-2 text-[#6b6458]">
+                  Get nudged exactly when it matters via push notifications (when available).
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="border-t border-[#d4cfc2] px-6 py-12 text-center text-sm text-[#6b6458]">
+        <p>&copy; {new Date().getFullYear()} Future-You. All rights reserved.</p>
       </footer>
     </div>
   );
