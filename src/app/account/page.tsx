@@ -53,7 +53,7 @@ export default function AccountPage() {
     const [newCategory, setNewCategory] = useState('');
 
     // Appearance state
-
+    const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('dark');
     const [accentColor, setAccentColor] = useState('#e05c4a');
     const [compactMode, setCompactMode] = useState(false);
 
@@ -82,6 +82,7 @@ export default function AccountPage() {
     };
 
     const loadPreferences = () => {
+        // Notifications
         const prefs = localStorage.getItem('notification_preferences');
         if (prefs) {
             const parsed = JSON.parse(prefs);
@@ -98,10 +99,15 @@ export default function AccountPage() {
             setQuietUntil(parsed.until || '08:00');
         }
 
+        // Appearance
+        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
+        setTheme(savedTheme as any);
+        document.documentElement.setAttribute('data-theme', savedTheme);
 
-
-        const accent = localStorage.getItem('accent_color');
-        if (accent) setAccentColor(accent);
+        const savedAccent = localStorage.getItem('accent_color') || '#e05c4a';
+        setAccentColor(savedAccent);
+        document.documentElement.style.setProperty('--accent-red', savedAccent);
+        document.documentElement.style.setProperty('--glow-red', `${savedAccent}26`); // 15% opacity
 
         const compact = localStorage.getItem('compact_mode');
         if (compact) setCompactMode(compact === 'true');
@@ -135,11 +141,48 @@ export default function AccountPage() {
         const totalResponses = reminders?.filter(r => r.response).length || 0;
         const keptRate = totalResponses > 0 ? Math.round((keptCount / totalResponses) * 100) : 0;
 
+        // Calculate Streak (Consecutive days with at least one 'kept' promise)
+        const { data: allReminders } = await supabase
+            .from('reminders')
+            .select('triggered_at, response')
+            .eq('user_id', user.id)
+            .order('triggered_at', { ascending: false });
+
+        let currentStreak = 0;
+        if (allReminders && allReminders.length > 0) {
+            const dateMap = new Map<string, boolean>();
+
+            // Map dates where at least one promise was kept
+            allReminders.forEach(r => {
+                if (r.response === 'kept') {
+                    const date = new Date(r.triggered_at).toISOString().split('T')[0];
+                    dateMap.set(date, true);
+                }
+            });
+
+            const today = new Date();
+            // Check past 365 days
+            for (let i = 0; i < 365; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - i);
+                const dateKey = d.toISOString().split('T')[0];
+
+                if (dateMap.has(dateKey)) {
+                    currentStreak++;
+                } else if (i === 0 && !dateMap.has(dateKey)) {
+                    // If today is missing, allow it (maybe haven't done it yet), but if yesterday is missing, stop
+                    continue;
+                } else {
+                    break;
+                }
+            }
+        }
+
         setStats({
             totalContracts: totalContracts || 0,
             keptRate,
-            currentStreak: 5, // Placeholder
-            bestStreak: 12 // Placeholder
+            currentStreak,
+            bestStreak: Math.max(currentStreak, 12) // Placeholder for best streak history
         });
     };
 
@@ -175,18 +218,57 @@ export default function AccountPage() {
         setSaving(false);
     };
 
-    const saveNotificationPreferences = () => {
-        localStorage.setItem('notification_preferences', JSON.stringify({
+    const updateNotificationPref = (key: string, value: any) => {
+        const newPrefs = {
             pushEnabled,
             contractReminders,
             weeklySummary,
-            streakAlerts
-        }));
-        localStorage.setItem('quiet_hours', JSON.stringify({
-            from: quietFrom,
-            until: quietUntil
-        }));
-        showToast('Preferences saved ✓', 'success');
+            streakAlerts,
+            [key]: value
+        };
+
+        // Update state
+        if (key === 'pushEnabled') setPushEnabled(value);
+        if (key === 'contractReminders') setContractReminders(value);
+        if (key === 'weeklySummary') setWeeklySummary(value);
+        if (key === 'streakAlerts') setStreakAlerts(value);
+
+        // Save local
+        localStorage.setItem('notification_preferences', JSON.stringify(newPrefs));
+
+        // Save Supabase
+        if (user) {
+            supabase.auth.updateUser({ data: { notification_prefs: newPrefs } });
+        }
+    };
+
+    const updateQuietHours = (type: 'from' | 'until', value: string) => {
+        const newQuiet = {
+            from: type === 'from' ? value : quietFrom,
+            until: type === 'until' ? value : quietUntil
+        };
+
+        if (type === 'from') setQuietFrom(value);
+        if (type === 'until') setQuietUntil(value);
+
+        localStorage.setItem('quiet_hours', JSON.stringify(newQuiet));
+
+        if (user) {
+            supabase.auth.updateUser({ data: { quiet_hours: newQuiet } });
+        }
+    };
+
+    const handleThemeChange = (newTheme: 'dark' | 'light' | 'system') => {
+        setTheme(newTheme);
+        localStorage.setItem('theme_preference', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+    };
+
+    const handleAccentChange = (color: string) => {
+        setAccentColor(color);
+        localStorage.setItem('accent_color', color);
+        document.documentElement.style.setProperty('--accent-red', color);
+        document.documentElement.style.setProperty('--glow-red', `${color}26`);
     };
 
     const handleExportCSV = async () => {
@@ -688,13 +770,10 @@ export default function AccountPage() {
                                             </div>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    setPushEnabled(!pushEnabled);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onClick={() => updateNotificationPref('pushEnabled', !pushEnabled)}
                                                 className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
                                                 style={{
-                                                    background: pushEnabled ? '#e05c4a' : '#4a4438'
+                                                    background: pushEnabled ? accentColor : '#4a4438'
                                                 }}
                                             >
                                                 <span
@@ -730,13 +809,10 @@ export default function AccountPage() {
                                             </div>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    setContractReminders(!contractReminders);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onClick={() => updateNotificationPref('contractReminders', !contractReminders)}
                                                 className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
                                                 style={{
-                                                    background: contractReminders ? '#e05c4a' : '#4a4438'
+                                                    background: contractReminders ? accentColor : '#4a4438'
                                                 }}
                                             >
                                                 <span
@@ -772,13 +848,10 @@ export default function AccountPage() {
                                             </div>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    setWeeklySummary(!weeklySummary);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onClick={() => updateNotificationPref('weeklySummary', !weeklySummary)}
                                                 className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
                                                 style={{
-                                                    background: weeklySummary ? '#e05c4a' : '#4a4438'
+                                                    background: weeklySummary ? accentColor : '#4a4438'
                                                 }}
                                             >
                                                 <span
@@ -814,13 +887,10 @@ export default function AccountPage() {
                                             </div>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    setStreakAlerts(!streakAlerts);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onClick={() => updateNotificationPref('streakAlerts', !streakAlerts)}
                                                 className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
                                                 style={{
-                                                    background: streakAlerts ? '#e05c4a' : '#4a4438'
+                                                    background: streakAlerts ? accentColor : '#4a4438'
                                                 }}
                                             >
                                                 <span
@@ -878,10 +948,7 @@ export default function AccountPage() {
                                             <input
                                                 type="time"
                                                 value={quietFrom}
-                                                onChange={(e) => {
-                                                    setQuietFrom(e.target.value);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onChange={(e) => updateQuietHours('from', e.target.value)}
                                                 className="w-full rounded-lg px-4 py-3 text-sm outline-none transition-all"
                                                 style={{
                                                     fontFamily: "'DM Sans', sans-serif",
@@ -913,10 +980,7 @@ export default function AccountPage() {
                                             <input
                                                 type="time"
                                                 value={quietUntil}
-                                                onChange={(e) => {
-                                                    setQuietUntil(e.target.value);
-                                                    saveNotificationPreferences();
-                                                }}
+                                                onChange={(e) => updateQuietHours('until', e.target.value)}
                                                 className="w-full rounded-lg px-4 py-3 text-sm outline-none transition-all"
                                                 style={{
                                                     fontFamily: "'DM Sans', sans-serif",
@@ -1203,6 +1267,46 @@ export default function AccountPage() {
                                     Appearance
                                 </h2>
 
+                                {/* Theme Card */}
+                                <div
+                                    className="rounded-2xl p-7"
+                                    style={{
+                                        background: '#1a1714',
+                                        border: '1px solid #2e2a24'
+                                    }}
+                                >
+                                    <h3
+                                        className="mb-6 flex items-center gap-2 text-xs uppercase tracking-widest"
+                                        style={{
+                                            fontFamily: "'JetBrains Mono', monospace",
+                                            letterSpacing: '0.2em',
+                                            color: '#5a5248'
+                                        }}
+                                    >
+                                        Theme
+                                        <div className="h-px flex-1" style={{ background: '#2e2a24' }} />
+                                    </h3>
+
+                                    <div className="flex gap-4">
+                                        {['dark', 'light'].map((t) => (
+                                            <button
+                                                key={t}
+                                                onClick={() => handleThemeChange(t as 'dark' | 'light')}
+                                                className={`flex-1 rounded-lg border px-4 py-3 text-sm font-medium capitalize transition-all ${theme === t ? 'border-[var(--accent-red)] text-[var(--accent-red)] bg-[var(--bg-elevated)]' : 'border-[#2e2a24] text-[#9a8f7e] hover:border-[#4a4438]'
+                                                    }`}
+                                                style={{
+                                                    borderColor: theme === t ? accentColor : '#2e2a24',
+                                                    color: theme === t ? accentColor : '#9a8f7e',
+                                                    background: theme === t ? 'rgba(255,255,255,0.03)' : 'transparent',
+                                                    fontFamily: "'DM Sans', sans-serif"
+                                                }}
+                                            >
+                                                {t} Mode
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 {/* Accent Color Card */}
                                 <div
                                     className="rounded-2xl p-7"
@@ -1237,10 +1341,7 @@ export default function AccountPage() {
                                         {accentColors.map((color) => (
                                             <button
                                                 key={color}
-                                                onClick={() => {
-                                                    setAccentColor(color);
-                                                    localStorage.setItem('accent_color', color);
-                                                }}
+                                                onClick={() => handleAccentChange(color)}
                                                 className="relative h-10 w-10 rounded-full transition-transform hover:scale-110"
                                                 style={{
                                                     background: color,

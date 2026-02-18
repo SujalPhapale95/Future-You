@@ -88,7 +88,11 @@ export default function ContractActions({ contractId, currentStatus }: ContractA
             <button
                 onClick={() => updateStatus('completed')}
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-green-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-[#0e0c0a] shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all"
+                style={{
+                    backgroundColor: 'var(--accent-green)',
+                    boxShadow: '0 4px 14px var(--glow-green)'
+                }}
             >
                 <Check className="mr-2 h-5 w-5" />
                 Promise Kept
@@ -97,7 +101,11 @@ export default function ContractActions({ contractId, currentStatus }: ContractA
             <button
                 onClick={() => updateStatus('failed')}
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50"
+                className="inline-flex items-center justify-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-[#0e0c0a] shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-all"
+                style={{
+                    backgroundColor: 'var(--accent-red)',
+                    boxShadow: '0 4px 14px var(--glow-red)'
+                }}
             >
                 <X className="mr-2 h-5 w-5" />
                 Promise Broken
@@ -106,7 +114,12 @@ export default function ContractActions({ contractId, currentStatus }: ContractA
             <button
                 onClick={deleteContract}
                 disabled={loading}
-                className="inline-flex items-center justify-center rounded-md border border-[#d4cfc2] bg-white px-6 py-3 text-base font-medium text-[#6b6458] shadow-sm hover:bg-[#f5f0e8] focus:outline-none focus:ring-2 focus:ring-[#c9443a] focus:ring-offset-2 disabled:opacity-50 sm:ml-auto"
+                className="inline-flex items-center justify-center rounded-md border px-6 py-3 text-base font-medium shadow-sm hover:bg-[var(--bg-elevated)] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 sm:ml-auto transition-all"
+                style={{
+                    borderColor: 'var(--border)',
+                    backgroundColor: 'transparent',
+                    color: 'var(--text-secondary)'
+                }}
             >
                 <Trash2 className="mr-2 h-5 w-5" />
                 Delete

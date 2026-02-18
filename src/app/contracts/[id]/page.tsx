@@ -6,6 +6,7 @@ import { ArrowLeft, Calendar, MapPin, Tag, Clock } from 'lucide-react';
 import StatusBadge from '@/components/StatusBadge';
 import CategoryTag from '@/components/CategoryTag';
 import ContractActions from '@/components/ContractActions';
+import ContractPreview from '@/components/ContractPreview';
 import { ContractWithConditions } from '@/types';
 
 interface PageProps {
@@ -42,28 +43,28 @@ export default async function ContractDetailPage({ params }: PageProps) {
     }
 
     return (
-        <div className="min-h-screen bg-[#f5f0e8] text-[#0f0e0c]">
+        <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
             <Navbar />
 
             <main className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
                 <div className="mb-6 flex items-center">
-                    <Link href="/dashboard" className="mr-4 text-[#6b6458] hover:text-[#0f0e0c]">
+                    <Link href="/dashboard" className="mr-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                         <ArrowLeft className="h-6 w-6" />
                     </Link>
-                    <span className="text-sm font-medium text-[#6b6458]">Back to Dashboard</span>
+                    <span className="text-sm font-medium text-[var(--text-secondary)]">Back to Dashboard</span>
                 </div>
 
-                <div className="overflow-hidden rounded-lg border border-[#d4cfc2] bg-white shadow-sm">
-                    <div className="border-b border-[#d4cfc2] bg-[#f9f6f0] px-6 py-4">
+                <div className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm">
+                    <div className="border-b border-[var(--border)] bg-[var(--bg-elevated)] px-6 py-4">
                         <div className="flex items-start justify-between">
                             <div>
                                 <div className="mb-2 flex items-center gap-2">
                                     <CategoryTag category={contract.category} />
-                                    <span className="text-xs text-[#6b6458]">
-                                        Created on {new Date(contract.created_at).toLocaleDateString()}
+                                    <span className="text-xs text-[var(--text-secondary)] font-mono">
+                                        CREATED ON {new Date(contract.created_at).toLocaleDateString().toUpperCase()}
                                     </span>
                                 </div>
-                                <h1 className="font-serif text-2xl font-bold text-[#0f0e0c] sm:text-3xl">
+                                <h1 className="font-serif text-2xl font-bold text-[var(--text-primary)] sm:text-3xl">
                                     {contract.title}
                                 </h1>
                             </div>
@@ -71,38 +72,51 @@ export default async function ContractDetailPage({ params }: PageProps) {
                         </div>
                     </div>
 
-                    <div className="px-6 py-6">
-                        <div className="prose prose-stone max-w-none">
-                            <h3 className="font-serif text-lg font-bold text-[#0f0e0c]">The Promise</h3>
-                            <p className="text-lg leading-relaxed text-[#0f0e0c]">{contract.body}</p>
+                    <div className="px-6 py-6 transition-all duration-300">
+                        <div className="prose prose-invert max-w-none">
+                            <h3 className="font-serif text-lg font-bold text-[var(--text-primary)]">The Promise</h3>
+                            <p className="text-lg leading-relaxed text-[var(--text-primary)] font-serif italic opacity-90">
+                                "{contract.body}"
+                            </p>
                         </div>
 
-                        <div className="mt-8 border-t border-[#d4cfc2] pt-6">
-                            <h3 className="mb-4 font-serif text-lg font-bold text-[#0f0e0c]">Conditions</h3>
+                        <div className="mt-8 border-t border-[var(--border)] pt-6">
+                            <h3 className="mb-4 font-serif text-lg font-bold text-[var(--text-primary)]">Conditions</h3>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {contract.conditions.length === 0 ? (
-                                    <p className="text-sm italic text-[#6b6458]">No specific conditions set.</p>
+                                    <p className="text-sm italic text-[var(--text-secondary)]">No specific conditions set.</p>
                                 ) : (
                                     contract.conditions.map((condition) => (
                                         <div
                                             key={condition.id}
-                                            className="flex items-center rounded-md border border-[#d4cfc2] bg-[#f9f6f0] px-4 py-3"
+                                            className="flex items-center rounded-md border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-3"
                                         >
-                                            {condition.type === 'time' && <Clock className="mr-3 h-5 w-5 text-[#c9443a]" />}
-                                            {condition.type === 'day' && <Calendar className="mr-3 h-5 w-5 text-[#c9443a]" />}
-                                            {condition.type === 'location_tag' && <MapPin className="mr-3 h-5 w-5 text-[#c9443a]" />}
-                                            {condition.type === 'situation_tag' && <Tag className="mr-3 h-5 w-5 text-[#c9443a]" />}
+                                            {condition.type === 'time' && <Clock className="mr-3 h-5 w-5 text-[var(--accent-red)]" />}
+                                            {condition.type === 'day' && <Calendar className="mr-3 h-5 w-5 text-[var(--accent-red)]" />}
+                                            {condition.type === 'location_tag' && <MapPin className="mr-3 h-5 w-5 text-[var(--accent-red)]" />}
+                                            {condition.type === 'situation_tag' && <Tag className="mr-3 h-5 w-5 text-[var(--accent-red)]" />}
 
                                             <div>
-                                                <p className="text-xs font-medium uppercase tracking-wider text-[#6b6458]">
+                                                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-faint)] font-mono">
                                                     {condition.type.replace('_', ' ')}
                                                 </p>
-                                                <p className="font-medium text-[#0f0e0c]">{condition.value}</p>
+                                                <p className="font-medium text-[var(--text-primary)]">{condition.value}</p>
                                             </div>
                                         </div>
                                     ))
                                 )}
                             </div>
+                        </div>
+
+                        <div className="mt-10 pt-8 border-t border-[var(--border)]">
+                            <h3 className="mb-6 font-serif text-lg font-bold text-[var(--text-primary)]">Official Document</h3>
+                            <ContractPreview
+                                title={contract.title}
+                                body={contract.body}
+                                category={contract.category}
+                                conditions={contract.conditions.map(c => ({ id: c.id, type: c.type, value: c.value }))}
+                                userEmail={session.user.email}
+                            />
                         </div>
 
                         <ContractActions contractId={contract.id} currentStatus={contract.status} />

@@ -28,24 +28,24 @@ export default async function ArchivePage() {
     const archivedContracts = (contractsData || []) as ContractWithConditions[];
 
     return (
-        <div className="min-h-screen bg-[#f5f0e8] text-[#0f0e0c]">
+        <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
             <Navbar />
 
             <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
                 <div className="mb-6 flex items-center">
-                    <Link href="/dashboard" className="mr-4 text-[#6b6458] hover:text-[#0f0e0c]">
+                    <Link href="/dashboard" className="mr-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
                         <ArrowLeft className="h-6 w-6" />
                     </Link>
-                    <h1 className="font-serif text-3xl font-bold tracking-tight">Archive</h1>
+                    <h1 className="font-serif text-3xl font-bold tracking-tight text-[var(--text-primary)]">Archive</h1>
                 </div>
-                <p className="mb-8 text-[#6b6458]">A history of your promises kept and lessons learned.</p>
+                <p className="mb-8 text-[var(--text-secondary)] font-serif italic">A history of your promises kept and lessons learned.</p>
 
                 {archivedContracts.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-[#d4cfc2] bg-[#f9f6f0] p-12 text-center">
-                        <p className="text-[#6b6458]">You don&apos;t have any archived contracts yet.</p>
+                    <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-12 text-center">
+                        <p className="text-[var(--text-secondary)]">You don&apos;t have any archived contracts yet.</p>
                         <Link
                             href="/dashboard"
-                            className="mt-4 inline-block font-medium text-[#c9443a] hover:text-[#b03028]"
+                            className="mt-4 inline-block font-medium text-[var(--accent-red)] hover:text-[var(--text-primary)] transition-colors"
                         >
                             Return to Dashboard
                         </Link>
