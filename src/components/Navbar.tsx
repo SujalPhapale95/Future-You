@@ -42,9 +42,6 @@ export default function Navbar() {
                     >
                         Future-You
                     </span>
-                    <span className="hidden rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-green)] opacity-80 sm:inline-block">
-                        v2.0
-                    </span>
                 </Link>
 
                 <div className="flex items-center gap-6">

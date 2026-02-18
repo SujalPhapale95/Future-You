@@ -82,7 +82,7 @@ export default async function DashboardPage() {
                             lineHeight: '1.1'
                         }}
                     >
-                        V2.0 LIVE
+                        Your Promises,
                         <br />
                         Future You.
                     </h1>
