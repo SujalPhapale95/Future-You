@@ -2,9 +2,9 @@ import withPWAInit from 'next-pwa';
 
 const withPWA = withPWAInit({
     dest: 'public',
-    disable: true,
+    disable: process.env.NODE_ENV === 'development',
     skipWaiting: true,
-    register: false,
+    register: true,
 });
 
 /** @type {import('next').NextConfig} */
