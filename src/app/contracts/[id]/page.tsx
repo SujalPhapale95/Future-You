@@ -8,6 +8,7 @@ import CategoryTag from '@/components/CategoryTag';
 import ContractActions from '@/components/ContractActions';
 import ContractPreview from '@/components/ContractPreview';
 import { ContractWithConditions } from '@/types';
+import ShareButton from '@/components/ShareButton';
 
 interface PageProps {
     params: {
@@ -27,7 +28,7 @@ export default async function ContractDetailPage({ params }: PageProps) {
 
     const { data: contractData, error } = await supabase
         .from('contracts')
-        .select('*, conditions(*)')
+        .select('*, conditions(*), signature')
         .eq('id', params.id)
         .single();
 
@@ -41,6 +42,18 @@ export default async function ContractDetailPage({ params }: PageProps) {
     if (contract.user_id !== session.user.id) {
         notFound();
     }
+
+    // Fetch reminders for stats
+    const { data: reminders } = await supabase
+        .from('reminders')
+        .select('*')
+        .eq('contract_id', params.id)
+        .order('triggered_at', { ascending: false });
+
+    const totalReminders = reminders?.length || 0;
+    const keptReminders = reminders?.filter(r => r.response === 'kept').length || 0;
+    const keptPercentage = totalReminders > 0 ? Math.round((keptReminders / totalReminders) * 100) : 0;
+    const lastReminded = reminders?.[0]?.triggered_at ? new Date(reminders[0].triggered_at).toLocaleDateString() : 'Never';
 
     return (
         <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
@@ -73,6 +86,22 @@ export default async function ContractDetailPage({ params }: PageProps) {
                     </div>
 
                     <div className="px-6 py-6 transition-all duration-300">
+                        {/* Stats Row */}
+                        <div className="mb-8 grid grid-cols-3 gap-4 rounded-lg border border-[var(--border)] bg-[var(--bg-base)] p-4">
+                            <div className="text-center">
+                                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">Reminded</p>
+                                <p className="font-mono text-xl font-bold text-[var(--text-primary)]">{totalReminders}</p>
+                            </div>
+                            <div className="text-center border-l border-[var(--border)]">
+                                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">Kept</p>
+                                <p className="font-mono text-xl font-bold text-emerald-500">{keptReminders} ({keptPercentage}%)</p>
+                            </div>
+                            <div className="text-center border-l border-[var(--border)]">
+                                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">Last</p>
+                                <p className="font-mono text-sm leading-8 font-bold text-[var(--text-primary)]">{lastReminded}</p>
+                            </div>
+                        </div>
+
                         <div className="prose prose-invert max-w-none">
                             <h3 className="font-serif text-lg font-bold text-[var(--text-primary)]">The Promise</h3>
                             <p className="text-lg leading-relaxed text-[var(--text-primary)] font-serif italic opacity-90">
@@ -101,6 +130,11 @@ export default async function ContractDetailPage({ params }: PageProps) {
                                                     {condition.type.replace('_', ' ')}
                                                 </p>
                                                 <p className="font-medium text-[var(--text-primary)]">{condition.value}</p>
+                                                {condition.is_recurring && (
+                                                    <span className="ml-2 inline-block rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-500">
+                                                        Recurring
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     ))
@@ -114,8 +148,9 @@ export default async function ContractDetailPage({ params }: PageProps) {
                                 title={contract.title}
                                 body={contract.body}
                                 category={contract.category}
-                                conditions={contract.conditions.map(c => ({ id: c.id, type: c.type, value: c.value }))}
+                                conditions={contract.conditions.map(c => ({ id: c.id, type: c.type, value: c.value, is_recurring: c.is_recurring }))}
                                 userEmail={session.user.email}
+                                signature={contract.signature}
                             />
                         </div>
 

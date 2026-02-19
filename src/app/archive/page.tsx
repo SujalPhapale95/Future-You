@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ContractCard from '@/components/ContractCard';
+import ArchiveBrowser from '@/components/ArchiveBrowser';
 import { ContractWithConditions } from '@/types';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -40,23 +41,7 @@ export default async function ArchivePage() {
                 </div>
                 <p className="mb-8 text-[var(--text-secondary)] font-serif italic">A history of your promises kept and lessons learned.</p>
 
-                {archivedContracts.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-12 text-center">
-                        <p className="text-[var(--text-secondary)]">You don&apos;t have any archived contracts yet.</p>
-                        <Link
-                            href="/dashboard"
-                            className="mt-4 inline-block font-medium text-[var(--accent-red)] hover:text-[var(--text-primary)] transition-colors"
-                        >
-                            Return to Dashboard
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="grid gap-6 sm:grid-cols-2">
-                        {archivedContracts.map((contract) => (
-                            <ContractCard key={contract.id} contract={contract} />
-                        ))}
-                    </div>
-                )}
+                <ArchiveBrowser contracts={archivedContracts} />
             </main>
         </div>
     );

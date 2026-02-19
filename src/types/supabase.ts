@@ -18,6 +18,7 @@ export type Database = {
                     category: string
                     status: string
                     created_at: string
+                    signature: string | null
                 }
                 Insert: {
                     id?: string
@@ -27,6 +28,7 @@ export type Database = {
                     category: string
                     status: string
                     created_at?: string
+                    signature?: string | null
                 }
                 Update: {
                     id?: string
@@ -36,6 +38,7 @@ export type Database = {
                     category?: string
                     status?: string
                     created_at?: string
+                    signature?: string | null
                 }
                 Relationships: [
                     {

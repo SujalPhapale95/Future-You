@@ -1,58 +1,43 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { ScrollText, ArrowRight } from 'lucide-react';
 
 interface EmptyStateProps {
     href: string;
 }
 
 export default function EmptyState({ href }: EmptyStateProps) {
-    const [isHovered, setIsHovered] = useState(false);
-
     return (
-        <div
-            className="rounded-2xl border border-dashed p-16 text-center"
-            style={{
-                backgroundColor: 'var(--bg-surface)',
-                borderColor: 'var(--border)'
-            }}
-        >
-            <div className="text-5xl opacity-20">📜</div>
-            <h3
-                className="mt-6 text-2xl italic"
-                style={{
-                    fontFamily: "'Lora', serif",
-                    color: 'var(--text-secondary)'
-                }}
-            >
-                No promises yet.
-            </h3>
-            <p
-                className="mt-2 text-sm"
-                style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    color: 'var(--text-faint)'
-                }}
-            >
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--border)] bg-[var(--bg-surface)] p-12 text-center animate-fade-in">
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[var(--bg-elevated)] text-4xl shadow-inner">
+                📜
+            </div>
+
+            <h3 className="mb-3 font-serif text-2xl font-bold text-[var(--text-primary)]">
                 Your future self is waiting.
-                <br />
-                Write your first contract.
+            </h3>
+
+            <p className="mb-8 max-w-sm text-[var(--text-secondary)]">
+                You haven't written any contracts yet. A contract is a promise you make to yourself that fires exactly when it matters.
             </p>
-            <Link
-                href={href}
-                className="mt-6 inline-flex items-center gap-2 rounded-lg border-none px-7 py-3 text-sm font-medium text-white transition-all duration-200"
-                style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    background: isHovered ? '#c94d3c' : 'var(--accent-red)',
-                    transform: isHovered ? 'translateY(-1px) scale(1.05)' : 'scale(1)',
-                    boxShadow: isHovered ? '0 6px 28px rgba(224, 92, 74, 0.45)' : '0 4px 20px rgba(224, 92, 74, 0.3)'
-                }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                → Write your first contract
-            </Link>
+
+            <div className="flex flex-col items-center gap-4">
+                <Link
+                    href={href}
+                    className="group flex items-center gap-2 rounded-full bg-[var(--accent-red)] px-8 py-3 font-medium text-white transition-all hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/20 active:scale-95"
+                >
+                    Start with a template
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+
+                <Link
+                    href={href}
+                    className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:underline"
+                >
+                    or write from scratch
+                </Link>
+            </div>
         </div>
     );
 }

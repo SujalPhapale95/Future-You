@@ -10,6 +10,7 @@ export interface Contract {
     category: string;
     status: ContractStatus;
     created_at: string;
+    signature?: string;
 }
 
 export interface Condition {

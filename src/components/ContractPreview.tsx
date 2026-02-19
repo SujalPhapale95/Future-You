@@ -8,6 +8,7 @@ interface ContractPreviewProps {
     category: string;
     conditions: ConditionInput[];
     userEmail?: string;
+    signature?: string;
 }
 
 const categoryColors: Record<string, string> = {
@@ -19,7 +20,7 @@ const categoryColors: Record<string, string> = {
     other: '#4a4438'
 };
 
-export default function ContractPreview({ title, body, category, conditions, userEmail }: ContractPreviewProps) {
+export default function ContractPreview({ title, body, category, conditions, userEmail, signature }: ContractPreviewProps) {
     const currentDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -110,6 +111,7 @@ export default function ContractPreview({ title, body, category, conditions, use
                                         {condition.type === 'day' && `On ${condition.value}`}
                                         {condition.type === 'location_tag' && `When at ${condition.value}`}
                                         {condition.type === 'situation_tag' && `During ${condition.value}`}
+                                        {condition.is_recurring && <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Recurring</span>}
                                     </li>
                                 ))
                             ) : (
@@ -147,12 +149,29 @@ export default function ContractPreview({ title, body, category, conditions, use
 
                     {/* Signature Line */}
                     <div className="mt-8 pt-8">
-                        <div
-                            className="w-48 mb-2"
-                            style={{
-                                borderBottom: '1px solid #6b6458'
-                            }}
-                        />
+                        {signature ? (
+                            <div className="mb-2">
+                                {signature.startsWith('data:image') ? (
+                                    <img src={signature} alt="signature" style={{ height: '40px' }} />
+                                ) : (
+                                    <div style={{
+                                        fontFamily: "'Brush Script MT', cursive",
+                                        fontSize: '24px',
+                                        color: '#2c2420',
+                                        padding: '4px 0'
+                                    }}>
+                                        {signature}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div
+                                className="w-48 mb-2"
+                                style={{
+                                    borderBottom: '1px solid #6b6458'
+                                }}
+                            />
+                        )}
                         <p
                             className="text-xs"
                             style={{

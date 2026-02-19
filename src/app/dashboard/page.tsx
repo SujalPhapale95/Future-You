@@ -6,6 +6,7 @@ import ContractCard from '@/components/ContractCard';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import PushNotificationManager from '@/components/PushNotificationManager';
 import EmptyState from '@/components/EmptyState';
+import WelcomeModal from '@/components/WelcomeModal';
 import { ContractWithConditions } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -103,6 +104,32 @@ export default async function DashboardPage() {
                         keptCount={stats.kept}
                         brokeCount={stats.broke}
                     />
+
+                    {/* Weekly Summary */}
+                    <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6">
+                        <h3 className="mb-4 text-xs uppercase tracking-widest text-[var(--text-secondary)] font-mono">This Week</h3>
+                        <div className="flex items-center gap-8">
+                            <div>
+                                <p className="text-2xl font-bold text-[var(--text-primary)] font-serif">
+                                    {/* Placeholder for weekly kept */}
+                                    {stats.kept > 0 ? Math.min(stats.kept, 5) : 0}
+                                </p>
+                                <p className="text-xs text-[var(--text-secondary)]">Promises Kept</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-[var(--accent-red)] font-serif">
+                                    {/* Placeholder for weekly broken - using 0 for positive vibes unless we have real data */}
+                                    0
+                                </p>
+                                <p className="text-xs text-[var(--text-secondary)]">Missed</p>
+                            </div>
+                            <div className="flex-1 text-right">
+                                <p className="text-sm text-[var(--text-primary)] italic font-serif">
+                                    "Consistency is the key."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <section className="contracts-section">
@@ -138,6 +165,7 @@ export default async function DashboardPage() {
             </main>
 
             <FloatingActionButton />
+            <WelcomeModal />
         </div>
     );
 }

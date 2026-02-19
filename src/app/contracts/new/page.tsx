@@ -7,6 +7,8 @@ import Navbar from '@/components/Navbar';
 import ConditionBuilder, { ConditionInput } from '@/components/ConditionBuilder';
 import ContractPreview from '@/components/ContractPreview';
 import SealAnimation from '@/components/SealAnimation';
+import ContractTemplates, { Template } from '@/components/ContractTemplates';
+import SignatureCanvas from '@/components/SignatureCanvas';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -31,6 +33,10 @@ export default function NewContractPage() {
     const [body, setBody] = useState('');
     const [category, setCategory] = useState('focus');
     const [conditions, setConditions] = useState<ConditionInput[]>([]);
+
+    // Signature State
+    const [signature, setSignature] = useState<string>('');
+    const [showSignaturePad, setShowSignaturePad] = useState(false);
 
     useEffect(() => {
         const getUser = async () => {
@@ -66,6 +72,7 @@ export default function NewContractPage() {
                     body,
                     category,
                     status: 'active',
+                    signature: signature,
                 })
                 .select()
                 .single();
@@ -78,7 +85,7 @@ export default function NewContractPage() {
                     contract_id: contractData.id,
                     type: c.type,
                     value: c.value,
-                    is_recurring: true,
+                    is_recurring: c.is_recurring,
                 }));
 
                 const { error: conditionsError } = await supabase
@@ -113,7 +120,6 @@ export default function NewContractPage() {
             <Navbar />
 
             <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
-                {/* Header */}
                 <div className="mb-10">
                     <Link
                         href="/dashboard"
@@ -139,6 +145,19 @@ export default function NewContractPage() {
                         A promise to your future self
                     </p>
                 </div>
+
+                <ContractTemplates onSelect={(template: Template) => {
+                    setTitle(template.title);
+                    setBody(template.body);
+                    setCategory(template.category);
+                    setConditions(template.conditions.map(c => ({
+                        id: crypto.randomUUID(),
+                        type: c.type as any,
+                        value: c.value,
+                        is_recurring: template.is_recurring
+                    })));
+                    window.scrollTo({ top: 400, behavior: 'smooth' });
+                }} />
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Title */}
@@ -294,12 +313,93 @@ export default function NewContractPage() {
                     />
                 </div>
 
+                {/* Signature input section */}
+                <div style={{ marginTop: '32px' }}>
+                    <h3 style={{
+                        fontFamily: "'Lora', serif",
+                        fontSize: '18px',
+                        color: '#f0ead8',
+                        marginBottom: '12px'
+                    }}>
+                        Your Signature
+                    </h3>
+                    <p style={{ fontSize: '13px', color: '#5a5248', marginBottom: '16px' }}>
+                        Sign this contract to make it official
+                    </p>
+
+                    {!signature ? (
+                        <button
+                            type="button"
+                            onClick={() => setShowSignaturePad(true)}
+                            style={{
+                                padding: '12px 24px',
+                                background: 'transparent',
+                                color: '#9a8f7e',
+                                border: '1px dashed #4a4438',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontSize: '14px',
+                                width: '100%'
+                            }}
+                        >
+                            ✍️ Click to sign
+                        </button>
+                    ) : (
+                        <div style={{
+                            background: '#faf6ee',
+                            border: '1px solid #d4cfc2',
+                            borderRadius: '8px',
+                            padding: '16px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            {signature.startsWith('data:image') ? (
+                                <img src={signature} alt="signature" style={{ height: '40px' }} />
+                            ) : (
+                                <span style={{
+                                    fontFamily: "'Brush Script MT', cursive",
+                                    fontSize: '24px',
+                                    color: '#2c2420'
+                                }}>
+                                    {signature}
+                                </span>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => setSignature('')}
+                                style={{
+                                    padding: '6px 12px',
+                                    background: 'transparent',
+                                    color: '#6b6458',
+                                    border: '1px solid #d4cfc2',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px'
+                                }}
+                            >
+                                Change
+                            </button>
+                        </div>
+                    )}
+
+                    {showSignaturePad && !signature && (
+                        <SignatureCanvas
+                            onSave={(sig) => {
+                                setSignature(sig);
+                                setShowSignaturePad(false);
+                            }}
+                        />
+                    )}
+                </div>
+
                 {/* Sign Contract Button */}
                 <div className="mt-6">
                     <button
                         onClick={handleSubmit}
-                        disabled={loading}
-                        className="w-full rounded-lg border-none px-4 py-4 text-lg italic font-semibold text-white transition-all duration-200 disabled:opacity-50"
+                        disabled={loading || !signature}
+                        className="w-full rounded-lg border-none px-4 py-4 text-lg italic font-semibold text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{
                             fontFamily: "'Lora', serif",
                             background: '#e05c4a',
@@ -307,7 +407,7 @@ export default function NewContractPage() {
                             letterSpacing: '0.02em'
                         }}
                         onMouseEnter={(e) => {
-                            if (!loading) {
+                            if (!loading && signature) {
                                 e.currentTarget.style.background = '#c94d3c';
                                 e.currentTarget.style.transform = 'translateY(-2px)';
                                 e.currentTarget.style.boxShadow = '0 10px 36px rgba(224, 92, 74, 0.55)';

@@ -1,36 +1,43 @@
+import Navbar from '@/components/Navbar';
+
 export default function Loading() {
     return (
-        <div className="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
-            <div className="mb-8 flex items-center justify-between">
-                <div className="h-8 w-48 animate-pulse rounded bg-gray-200"></div>
-                <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200"></div>
-            </div>
+        <div className="min-h-screen bg-[var(--bg-base)]">
+            <Navbar />
+            <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+                {/* Header Skeleton */}
+                <div className="mb-10 animate-pulse">
+                    <div className="h-4 w-32 rounded bg-[var(--bg-elevated)] mb-4"></div>
+                    <div className="h-12 w-3/4 rounded bg-[var(--bg-elevated)] mb-2"></div>
+                    <div className="h-12 w-1/2 rounded bg-[var(--bg-elevated)]"></div>
+                    <div className="mt-4 h-px w-16 bg-[var(--bg-elevated)]"></div>
+                </div>
 
-            <div className="mb-8 grid grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex flex-col items-center justify-center rounded-lg bg-white p-4 shadow-sm h-24 animate-pulse">
-                        <div className="h-8 w-8 rounded-full bg-gray-200 mb-2"></div>
-                        <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                    </div>
-                ))}
-            </div>
+                {/* Stats Skeleton */}
+                <div className="mb-10 animate-pulse flex gap-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-24 flex-1 rounded-xl bg-[var(--bg-elevated)]"></div>
+                    ))}
+                </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div key={i} className="h-48 animate-pulse rounded-lg bg-white p-6 shadow-sm">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
-                            <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
-                        </div>
-                        <div className="h-6 w-3/4 bg-gray-200 rounded mb-2"></div>
-                        <div className="h-4 w-full bg-gray-200 rounded mb-4"></div>
-                        <div className="flex gap-2">
-                            <div className="h-6 w-12 bg-gray-200 rounded-full"></div>
-                            <div className="h-6 w-12 bg-gray-200 rounded-full"></div>
-                        </div>
+                {/* Contracts Skeleton */}
+                <div className="animate-pulse">
+                    <div className="mb-6 flex items-center gap-3">
+                        <div className="h-1.5 w-1.5 rounded-full bg-[var(--bg-elevated)]"></div>
+                        <div className="h-8 w-48 rounded bg-[var(--bg-elevated)]"></div>
                     </div>
-                ))}
-            </div>
+
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="h-48 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6">
+                                <div className="mb-4 h-6 w-1/3 rounded bg-[var(--bg-surface)]"></div>
+                                <div className="mb-2 h-4 w-full rounded bg-[var(--bg-surface)]"></div>
+                                <div className="mb-4 h-4 w-2/3 rounded bg-[var(--bg-surface)]"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </main>
         </div>
     );
 }
